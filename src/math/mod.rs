@@ -10,7 +10,7 @@ mod tests {
 
     #[test]
     fn can_create_variables() {
-        let v: Variable = Variable::new(String::from("x"), 1.0);
+        let v: Variable = Variable::new("x", 1.0);
         assert_eq!("x", v.name());
         assert_eq!(1.0, v.coefficient())
     }
@@ -39,10 +39,9 @@ mod tests {
 
     #[test]
     fn can_create_expressions() {
-        let expression = Expression::new(vec![Variable::new("Z".to_string(), 1.0)],
+        let expression = Expression::new(vec![Variable::new("Z", 1.0)],
                                          Relationship::EQ,
-                                         vec![Variable::new("x".to_string(), 1.0),
-                                              Variable::new("y".to_string(), 2.0)]);
+                                         vec![Variable::new("x", 1.0), Variable::new("y", 2.0)]);
         assert_eq!("Z", expression.left_hand_side()[0].name());
         assert_eq!(1.0, expression.left_hand_side()[0].coefficient());
         assert_eq!(&Relationship::EQ, expression.relationship());

@@ -1,7 +1,7 @@
 use ::std::f64;
 
 pub trait AbstractVariable {
-    fn new(n: String, c: f64) -> Self;
+    fn new(n: &str, c: f64) -> Self;
     fn name(&self) -> &String;
     fn coefficient(&self) -> f64;
 }
@@ -12,9 +12,9 @@ pub struct Variable {
 }
 
 impl AbstractVariable for Variable {
-    fn new(n: String, c: f64) -> Variable {
+    fn new(n: &str, c: f64) -> Variable {
         Variable {
-            name: n,
+            name: n.to_string(),
             coefficient: c,
         }
     }
