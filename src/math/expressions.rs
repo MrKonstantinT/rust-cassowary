@@ -8,11 +8,11 @@ pub struct Expression<T: AbstractVariable> {
 }
 
 impl<T: AbstractVariable> Expression<T> {
-    pub fn new(lH: Vec<T>, r: Relationship, rH: Vec<T>) -> Expression<T> {
+    pub fn new(l_h_s: Vec<T>, r: Relationship, r_h_s: Vec<T>) -> Expression<T> {
         Expression {
-            left_hand_side: lH,
+            left_hand_side: l_h_s,
             relationship: r,
-            right_hand_side: rH,
+            right_hand_side: r_h_s,
         }
     }
 
