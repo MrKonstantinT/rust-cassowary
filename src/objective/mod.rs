@@ -1,6 +1,7 @@
 pub mod problems;
 pub mod functions;
 pub mod constraints;
+pub mod solver;
 
 #[cfg(test)]
 mod tests {

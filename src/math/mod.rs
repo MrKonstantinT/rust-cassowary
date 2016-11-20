@@ -54,4 +54,26 @@ mod tests {
         assert_eq!(1.0, expression.right_hand_side()[2].coefficient());
         assert_eq!(365.0, expression.right_hand_side()[2].value())
     }
+
+    #[test]
+    fn can_multiply_both_sides_of_expressions() {
+        let mut c: Constant = AbstractVariable::new("c", 1.0);
+        c.set_value(365.0);
+        let mut expression = Expression::new(vec![AbstractVariable::new("Z", 1.0)],
+                                             Relationship::EQ,
+                                             vec![AbstractVariable::new("x", 1.0),
+                                                  AbstractVariable::new("y", 2.0),
+                                                  c]);
+        expression.multiply_both_sides(2.0);
+        assert_eq!("Z", expression.left_hand_side()[0].name());
+        assert_eq!(2.0, expression.left_hand_side()[0].coefficient());
+        assert_eq!(Relationship::EQ, *expression.relationship());
+        assert_eq!("x", expression.right_hand_side()[0].name());
+        assert_eq!(2.0, expression.right_hand_side()[0].coefficient());
+        assert_eq!("y", expression.right_hand_side()[1].name());
+        assert_eq!(4.0, expression.right_hand_side()[1].coefficient());
+        assert_eq!("c", expression.right_hand_side()[2].name());
+        assert_eq!(2.0, expression.right_hand_side()[2].coefficient());
+        //assert_eq!(730.0, expression.right_hand_side()[2].value())
+    }
 }

@@ -27,4 +27,25 @@ impl<T: AbstractVariable> Expression<T> {
     pub fn right_hand_side(&self) -> &Vec<T> {
         &self.right_hand_side
     }
+
+    pub fn multiply_both_sides(&mut self, by: f64) {
+        if by.is_sign_negative() && self.relationship != Relationship::EQ {
+            if self.relationship == Relationship::GEQ {
+                self.relationship = Relationship::LEQ;
+            } else {
+                self.relationship = Relationship::GEQ;
+            }
+        }
+
+        multiply_side(&mut self.left_hand_side, by);
+        multiply_side(&mut self.right_hand_side, by);
+    }
+}
+
+fn multiply_side<T: AbstractVariable>(side: &mut Vec<T>, by: f64) {
+    for i in 0..side.len() {
+        let old_coeff: f64 = side[i].coefficient();
+        let variable = &mut side[i];
+        variable.set_coefficient(old_coeff * by);
+    }
 }

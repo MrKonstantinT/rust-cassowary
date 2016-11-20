@@ -4,6 +4,7 @@ pub trait AbstractVariable {
     fn new(n: &str, c: f64) -> Self;
     fn name(&self) -> &String;
     fn coefficient(&self) -> f64;
+    fn set_coefficient(&mut self, new_c: f64);
 }
 
 pub trait AbstractConstant: AbstractVariable {
@@ -37,6 +38,10 @@ impl AbstractVariable for Variable {
     fn coefficient(&self) -> f64 {
         self.coefficient
     }
+
+    fn set_coefficient(&mut self, new_c: f64) {
+        self.coefficient = new_c;
+    }
 }
 
 impl AbstractVariable for Constant {
@@ -54,6 +59,10 @@ impl AbstractVariable for Constant {
 
     fn coefficient(&self) -> f64 {
         self.coefficient
+    }
+
+    fn set_coefficient(&mut self, new_c: f64) {
+        self.coefficient = new_c;
     }
 }
 
