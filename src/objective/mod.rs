@@ -1,3 +1,4 @@
+pub mod problems;
 pub mod functions;
 
 #[cfg(test)]
@@ -5,7 +6,16 @@ mod tests {
     use math::variables::{AbstractVariable, Variable};
     use math::relationships::Relationship;
     use math::expressions::Expression;
+    use objective::problems::Problem;
     use objective::functions::Function;
+
+    #[test]
+    fn can_create_problems() {
+        let max_problem: Problem = Problem::MAX;
+        assert_eq!(Problem::MAX, max_problem);
+        let min_problem: Problem = Problem::MIN;
+        assert_eq!(Problem::MIN, min_problem);
+    }
 
     #[test]
     fn can_create_functions() {
@@ -14,7 +24,8 @@ mod tests {
                                          Relationship::EQ,
                                          vec![AbstractVariable::new("x", 1.0),
                                               AbstractVariable::new("y", 2.0)]);
-        let function = Function::new(expression);
+        let function = Function::new(Problem::MAX, expression);
+        assert_eq!(Problem::MAX, *function.problem());
         assert_eq!("Z", function.expression().left_hand_side()[0].name());
         assert_eq!(1.0, function.expression().left_hand_side()[0].coefficient());
         assert_eq!(&Relationship::EQ, function.expression().relationship());
