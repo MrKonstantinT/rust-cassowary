@@ -1,4 +1,4 @@
-use math::variables::{new_slack_var, new_surplus_var};
+use math::variables::{new_slack_var, new_surplus_var, new_arti_var};
 use math::relationships::Relationship;
 use objective::functions::Function;
 use objective::constraints::{Constraint, SystemOfConstraints};
@@ -21,7 +21,7 @@ pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints) {
                         exp.add_lhs(new_surplus_var(format!("{}{}", "su", i + 1)));
                         exp.set_rel(Relationship::EQ);
                     }
-                    _ => continue,
+                    &Relationship::EQ => exp.add_lhs(new_arti_var(format!("{}{}", "arti", i + 1))),
                 }
             }
             &Constraint::NonNegative(_) => continue,

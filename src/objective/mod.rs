@@ -151,11 +151,15 @@ mod tests {
         let exp3 = Expression::new(vec![new_var("u", 61.0), new_var("t", 19.0)],
                                    Relationship::GEQ,
                                    vec![new_const("hyperplane", -3000.0)]);
+        let exp4 = Expression::new(vec![new_var("k", 101.0), new_var("c", 45.0)],
+                                   Relationship::EQ,
+                                   vec![new_const("length", 500.0)]);
         let c1 = new_reg_con(exp1);
         let c2 = new_reg_con(exp2);
         let c3 = new_reg_con(exp3);
-        let c4 = new_non_neg_con(new_var("x", 2.0));
-        let s = SystemOfConstraints::new(vec![c1, c2, c3, c4]);
+        let c4 = new_reg_con(exp4);
+        let c5 = new_non_neg_con(new_var("x", 2.0));
+        let s = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
         transform_constraint_rels_to_eq(&s);
         match s.system()[0] {
             Constraint::Regular(ref ref_cell) => {
@@ -201,6 +205,20 @@ mod tests {
             _ => panic!("Unexpected variant in this program logic."),
         };
         match s.system()[3] {
+            Constraint::Regular(ref ref_cell) => {
+                let exp = ref_cell.borrow();
+                assert_eq!("k", exp.lhs()[0].name());
+                assert_eq!(101.0, exp.lhs()[0].get_data());
+                assert_eq!(Relationship::EQ, *exp.rel());
+                assert_eq!("c", exp.lhs()[1].name());
+                assert_eq!(45.0, exp.lhs()[1].get_data());
+                assert_eq!(AbstVar::ArtiVar { name: "arti4".to_string() }, exp.lhs()[2]);
+                assert_eq!("length", exp.rhs()[0].name());
+                assert_eq!(500.0, exp.rhs()[0].get_data());
+            }
+            _ => panic!("Unexpected variant in this program logic."),
+        };
+        match s.system()[4] {
             Constraint::NonNegative(ref abst_var) => {
                 assert_eq!("x", abst_var.name());
                 assert_eq!(2.0, abst_var.get_data());
