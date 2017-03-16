@@ -29,20 +29,14 @@ mod tests {
         assert_eq!(450.0, c1.get_data());
 
         let sl_var = new_slack_var("sl1".to_string());
-        assert_eq!(AbstVar::SlackVar {
-                       name: "sl1".to_string(),
-                   },
-                   sl_var);
-       assert_eq!("sl1", sl_var.name());
-       assert_eq!(1.0, sl_var.get_data());
+        assert_eq!(AbstVar::SlackVar { name: "sl1".to_string() }, sl_var);
+        assert_eq!("sl1", sl_var.name());
+        assert_eq!(1.0, sl_var.get_data());
 
-       let su_var = new_surplus_var("su1".to_string());
-       assert_eq!(AbstVar::SurplusVar {
-                      name: "su1".to_string(),
-                  },
-                  su_var);
-      assert_eq!("su1", su_var.name());
-      assert_eq!(-1.0, su_var.get_data());
+        let su_var = new_surplus_var("su1".to_string());
+        assert_eq!(AbstVar::SurplusVar { name: "su1".to_string() }, su_var);
+        assert_eq!("su1", su_var.name());
+        assert_eq!(-1.0, su_var.get_data());
     }
 
     #[test]
