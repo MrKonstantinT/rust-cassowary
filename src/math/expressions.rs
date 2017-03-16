@@ -36,7 +36,23 @@ impl Expression {
     }
 
     pub fn add_lhs(&mut self, to_add: AbstVar) {
+        for mut var in self.left_hand_side.iter_mut() {
+            if var == &to_add {
+                collect_two_vars(&mut var, &to_add);
+                return;
+            }
+        }
         self.left_hand_side.push(to_add);
+    }
+
+    pub fn add_rhs(&mut self, to_add: AbstVar) {
+        for mut var in self.right_hand_side.iter_mut() {
+            if var == &to_add {
+                collect_two_vars(&mut var, &to_add);
+                return;
+            }
+        }
+        self.right_hand_side.push(to_add);
     }
 
     pub fn move_from_lhs_side(&mut self, index: usize, insert_at_start: bool) {
@@ -70,6 +86,11 @@ impl Expression {
             Err("Invalid state: relationship must be \"EQ\".")
         }
     }
+}
+
+fn collect_two_vars(into: &mut AbstVar, other: &AbstVar) {
+    let old_var_data = into.get_data();
+    into.set_data(old_var_data + other.get_data());
 }
 
 fn insert_side(side: &mut Vec<AbstVar>, var: AbstVar, start: bool) {

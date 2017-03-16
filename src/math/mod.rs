@@ -90,28 +90,52 @@ mod tests {
     }
 
     #[test]
-    fn can_add_lhs() {
-        let mut exp: Expression =
+    fn can_add_to_sides() {
+        let mut exp1: Expression =
             Expression::new(vec![new_var("Z", 1.0)],
                             Relationship::EQ,
                             vec![new_var("x", 2.0), new_var("y", 3.0), new_const("bonus", 1000.0)]);
-        exp.add_lhs(new_var("w", 9.0));
-        exp.add_lhs(new_const("weight", 700.0));
-        exp.add_lhs(new_slack_var("s1".to_string()));
-        assert_eq!("Z", exp.lhs()[0].name());
-        assert_eq!(1.0, exp.lhs()[0].get_data());
-        assert_eq!("w", exp.lhs()[1].name());
-        assert_eq!(9.0, exp.lhs()[1].get_data());
-        assert_eq!("weight", exp.lhs()[2].name());
-        assert_eq!(700.0, exp.lhs()[2].get_data());
-        assert_eq!("s1", exp.lhs()[3].name());
-        assert_eq!(Relationship::EQ, *exp.rel());
-        assert_eq!("x", exp.rhs()[0].name());
-        assert_eq!(2.0, exp.rhs()[0].get_data());
-        assert_eq!("y", exp.rhs()[1].name());
-        assert_eq!(3.0, exp.rhs()[1].get_data());
-        assert_eq!("bonus", exp.rhs()[2].name());
-        assert_eq!(1000.0, exp.rhs()[2].get_data());
+        exp1.add_lhs(new_var("w", 9.0));
+        exp1.add_lhs(new_const("weight", 700.0));
+        exp1.add_lhs(new_slack_var("s1".to_string()));
+        exp1.add_lhs(new_var("Z", 2.0));
+        assert_eq!("Z", exp1.lhs()[0].name());
+        assert_eq!(3.0, exp1.lhs()[0].get_data());
+        assert_eq!("w", exp1.lhs()[1].name());
+        assert_eq!(9.0, exp1.lhs()[1].get_data());
+        assert_eq!("weight", exp1.lhs()[2].name());
+        assert_eq!(700.0, exp1.lhs()[2].get_data());
+        assert_eq!("s1", exp1.lhs()[3].name());
+        assert_eq!(Relationship::EQ, *exp1.rel());
+        assert_eq!("x", exp1.rhs()[0].name());
+        assert_eq!(2.0, exp1.rhs()[0].get_data());
+        assert_eq!("y", exp1.rhs()[1].name());
+        assert_eq!(3.0, exp1.rhs()[1].get_data());
+        assert_eq!("bonus", exp1.rhs()[2].name());
+        assert_eq!(1000.0, exp1.rhs()[2].get_data());
+
+        let mut exp2: Expression =
+            Expression::new(vec![new_var("Z", 1.0)],
+                            Relationship::EQ,
+                            vec![new_var("x", 2.0), new_var("y", 3.0), new_const("bonus", 1000.0)]);
+        exp2.add_rhs(new_var("w", 9.0));
+        exp2.add_rhs(new_const("weight", 700.0));
+        exp2.add_rhs(new_slack_var("s1".to_string()));
+        exp2.add_rhs(new_const("bonus", 500.0));
+        assert_eq!("Z", exp2.lhs()[0].name());
+        assert_eq!(1.0, exp2.lhs()[0].get_data());
+        assert_eq!(Relationship::EQ, *exp2.rel());
+        assert_eq!("x", exp2.rhs()[0].name());
+        assert_eq!(2.0, exp2.rhs()[0].get_data());
+        assert_eq!("y", exp2.rhs()[1].name());
+        assert_eq!(3.0, exp2.rhs()[1].get_data());
+        assert_eq!("bonus", exp2.rhs()[2].name());
+        assert_eq!(1500.0, exp2.rhs()[2].get_data());
+        assert_eq!("w", exp2.rhs()[3].name());
+        assert_eq!(9.0, exp2.rhs()[3].get_data());
+        assert_eq!("weight", exp2.rhs()[4].name());
+        assert_eq!(700.0, exp2.rhs()[4].get_data());
+        assert_eq!("s1", exp2.rhs()[5].name());
     }
 
     #[test]
