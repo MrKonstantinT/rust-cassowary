@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::fmt::{Formatter, Debug, Result};
 use math::variables::new_var;
 use math::relationships::Relationship;
 use math::expressions::Expression;
@@ -47,6 +48,22 @@ impl Function {
         } else {
             &self.expression
         }
+    }
+}
+
+impl Debug for Function {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let exp = self.expression.borrow();
+        let mut string_exp = exp.rhs().iter().fold(String::new(), |mut rhs_s, ref var| {
+            rhs_s.push_str(" ");
+            rhs_s.push_str(var.get_data().to_string().as_str());
+            rhs_s.push_str(var.name());
+            rhs_s.push_str(" +");
+            rhs_s
+        });
+        string_exp.pop().unwrap();
+        string_exp.pop().unwrap();
+        write!(f, "{} ={}", exp.lhs()[0].name(), string_exp)
     }
 }
 

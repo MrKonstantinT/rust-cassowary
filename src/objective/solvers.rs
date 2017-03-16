@@ -1,9 +1,14 @@
-use math::variables::{new_slack_var, new_surplus_var, new_arti_var};
+use std::result::Result;
+use math::variables::{new_var, new_slack_var, new_surplus_var, new_arti_var};
+use math::expressions::Expression;
 use math::relationships::Relationship;
 use objective::functions::Function;
+use objective::problems::ProblemType;
 use objective::constraints::{Constraint, SystemOfConstraints};
 
-pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints) {
+pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints)
+                                       -> Result<&str, Function> {
+    let mut phase1: Option<Expression> = None;
     for (i, constraint) in constraints.system().iter().enumerate() {
         match constraint {
             &Constraint::Regular(ref ref_cell) => {
@@ -21,11 +26,32 @@ pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints) {
                         exp.add_lhs(new_surplus_var(format!("{}{}", "su", i + 1)));
                         exp.set_rel(Relationship::EQ);
                     }
-                    &Relationship::EQ => exp.add_lhs(new_arti_var(format!("{}{}", "arti", i + 1))),
+                    &Relationship::EQ => {
+                        // Build function for phase 1.
+                        if let Some(ref mut phase1_fun_exp) = phase1 {
+                            phase1_fun_exp.add_rhs(new_var("RHS", exp.rhs()[0].get_data()));
+                            for var in exp.lhs() {
+                                phase1_fun_exp.add_rhs(var.clone());
+                            }
+                        } else {
+                            let mut phase1_fun_exp = Expression::new(vec![new_var("W", 1.0)],
+                                                                     Relationship::EQ,
+                                                                     exp.lhs().clone());
+                            phase1_fun_exp.add_rhs(new_var("RHS", exp.rhs()[0].get_data()));
+                            phase1 = Some(phase1_fun_exp);
+                        }
+                        // Transform.
+                        exp.add_lhs(new_arti_var(format!("{}{}", "arti", i + 1)));
+                    }
                 }
             }
             &Constraint::NonNegative(_) => continue,
         };
+    }
+    if let Some(phase1_fun_exp) = phase1 {
+        Err(Function::new(phase1_fun_exp, ProblemType::MAX))
+    } else {
+        Ok("Did not find any EQ constraints to raise need for phase 1.")
     }
 }
 

@@ -15,7 +15,7 @@ pub type Num = f32;
 
 pub fn optimise(function: &mut Function, constraints: &SystemOfConstraints) -> Vec<(String, Num)> {
     rearrange_fun_eq_zero(function);
-    transform_constraint_rels_to_eq(constraints);
+    transform_constraint_rels_to_eq(constraints).unwrap();
     let mut table = get_initial_table_from(function, constraints);
     loop {
         match table.get_basic_solution() {
