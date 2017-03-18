@@ -178,7 +178,7 @@ mod tests {
 
         e1.move_from_lhs_side(0, false);
         assert_eq!(1, e1.lhs().len());
-        assert_eq!("zero", e1.lhs()[0].name());
+        assert_eq!("RHS", e1.lhs()[0].name());
         assert_eq!(0.0, e1.lhs()[0].get_data());
         assert_eq!(Relationship::GEQ, *e1.rel());
         assert_eq!(4, e1.rhs().len());
@@ -228,7 +228,7 @@ mod tests {
 
         e2.move_from_lhs_side(0, true);
         assert_eq!(1, e2.lhs().len());
-        assert_eq!("zero", e2.lhs()[0].name());
+        assert_eq!("RHS", e2.lhs()[0].name());
         assert_eq!(0.0, e2.lhs()[0].get_data());
         assert_eq!(Relationship::GEQ, *e2.rel());
         assert_eq!(5, e2.rhs().len());

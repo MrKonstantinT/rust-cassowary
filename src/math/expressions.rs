@@ -36,30 +36,18 @@ impl Expression {
     }
 
     pub fn add_lhs(&mut self, to_add: AbstVar) {
-        for mut var in self.left_hand_side.iter_mut() {
-            if var == &to_add {
-                collect_two_vars(&mut var, &to_add);
-                return;
-            }
-        }
-        self.left_hand_side.push(to_add);
+        add_side(&mut self.left_hand_side, to_add);
     }
 
     pub fn add_rhs(&mut self, to_add: AbstVar) {
-        for mut var in self.right_hand_side.iter_mut() {
-            if var == &to_add {
-                collect_two_vars(&mut var, &to_add);
-                return;
-            }
-        }
-        self.right_hand_side.push(to_add);
+        add_side(&mut self.right_hand_side, to_add);
     }
 
     pub fn move_from_lhs_side(&mut self, index: usize, insert_at_start: bool) {
         let mut to_move = self.left_hand_side.remove(index);
         to_move.change_sign();
         if self.left_hand_side.is_empty() {
-            self.left_hand_side.push(new_const("zero", 0.0));
+            self.left_hand_side.push(new_const("RHS", 0.0));
         }
         insert_side(&mut self.right_hand_side, to_move, insert_at_start);
     }
@@ -88,24 +76,40 @@ impl Expression {
     }
 }
 
-fn collect_two_vars(into: &mut AbstVar, other: &AbstVar) {
-    let old_var_data = into.get_data();
-    into.set_data(old_var_data + other.get_data());
+fn add_side(side: &mut Vec<AbstVar>, to_add: AbstVar) {
+    if let Some(new_var) = collect_into_existing(side, to_add) {
+        side.push(new_var);
+    }
+}
+
+fn collect_into_existing(side: &mut Vec<AbstVar>, to_add: AbstVar) -> Option<AbstVar> {
+    for mut var in side.iter_mut() {
+        if var == &to_add {
+            let old_var_data = var.get_data();
+            var.set_data(old_var_data + to_add.get_data());
+            return None;
+        }
+    }
+    Some(to_add)
 }
 
 fn insert_side(side: &mut Vec<AbstVar>, var: AbstVar, start: bool) {
-    // Preserve order of basic followed by non basic
-    if start {
-        side.insert(0, var);
-    } else {
-        let mut insert_at = 0;
-        while insert_at < side.len() {
-            match &mut side[insert_at] {
-                &mut AbstVar::SlackVar { .. } => break,
-                _ => insert_at += 1,
-            };
+    // Maybe variable already exits...
+    if let Some(to_insert) = collect_into_existing(side, var) {
+        // ... or not.
+        // Preserve order of decision variables followed by non-decision variables.
+        if start {
+            side.insert(0, to_insert);
+        } else {
+            let mut insert_at = 0;
+            while insert_at < side.len() {
+                match &side[insert_at] {
+                    &AbstVar::Variable { .. } => insert_at += 1,
+                    _ => break,
+                };
+            }
+            side.insert(insert_at, to_insert);
         }
-        side.insert(insert_at, var);
     }
 }
 

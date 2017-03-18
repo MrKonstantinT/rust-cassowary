@@ -1,5 +1,5 @@
 use std::result::Result;
-use math::variables::{new_var, new_slack_var, new_surplus_var, new_arti_var};
+use math::variables::{AbstVar, new_var, new_slack_var, new_surplus_var, new_arti_var};
 use math::expressions::Expression;
 use math::relationships::Relationship;
 use objective::functions::Function;
@@ -59,5 +59,15 @@ pub fn rearrange_fun_eq_zero(function: &mut Function) {
     let mut exp = function.exp_max().borrow_mut();
     exp.move_from_lhs_side(0, false);
     exp.swap_sides().unwrap();
+    // Move the constant on the other side if present.
+    let search = exp.lhs().iter().rposition(|var| {
+        match var {
+            &AbstVar::Constant { .. } => true,
+            _ => false,
+        }
+    });
+    if let Some(found_index) = search {
+        exp.move_from_lhs_side(found_index, false);
+    }
     exp.mul_both_sides(-1.0);
 }
