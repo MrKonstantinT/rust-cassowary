@@ -9,7 +9,8 @@ pub fn leave_var(enter_var_index: usize, table: &Table) -> usize {
     let mut ratio_current = table_rows[row_index][last_column_index] /
                             table_rows[row_index][enter_var_index];
     let mut i = 1;
-    while i < table_rows.len() - 1 { // Only consider rows with non-basic variables.
+    // Do not consider RHS of the function row as we do not pivot on it.
+    while i < table_rows.len() - 1 {
         if ratio_current.is_sign_negative() {
             row_index = row_index + 1;
             ratio_current = table_rows[row_index][last_column_index] /

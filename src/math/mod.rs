@@ -4,8 +4,7 @@ pub mod expressions;
 
 #[cfg(test)]
 mod tests {
-    use math::variables::{AbstVar, new_var, new_const, new_slack_var, new_surplus_var,
-                          new_arti_var};
+    use math::variables::{AbstVar, new_var, new_const, new_slack_var, new_surplus_var, new_arti_var};
     use math::relationships::Relationship;
     use math::expressions::Expression;
 

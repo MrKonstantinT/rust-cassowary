@@ -41,7 +41,7 @@ impl Table {
                         // ... if this is not the case then the value of this
                         // variables in the basic solution is 0.0.
                         basic_solution.push((get_name_of_index(&self.column_names, i).unwrap(),
-                                            0.0));
+                                             0.0));
                         continue 'columns;
                     }
                 }
@@ -71,7 +71,8 @@ impl Table {
     }
 
     pub fn get_row_of_basic_var(&self, b_var_name: &String) -> usize {
-        let column = *self.column_names.get(b_var_name).expect("Basic variable name supplied does not exist.");
+        let column = *self.column_names.get(b_var_name)
+            .expect("Basic variable name supplied does not exist.");
         let mut basic_var_row = 0;
         let mut matched_one = false;
         for i in 0..self.rows.len() {

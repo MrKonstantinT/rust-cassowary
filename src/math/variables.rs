@@ -7,7 +7,7 @@ pub enum AbstVar {
     Constant { name: String, value: Num },
     SlackVar { name: String },
     SurplusVar { name: String },
-    ArtiVar { name: String }
+    ArtiVar { name: String },
 }
 
 impl Hash for AbstVar {
@@ -17,6 +17,7 @@ impl Hash for AbstVar {
 }
 
 impl PartialEq for AbstVar {
+    #[cfg_attr(rustfmt, rustfmt_skip)]
     fn eq(&self, other: &AbstVar) -> bool {
         match (self, other) {
             (&AbstVar::Variable { name: ref n1, .. }, &AbstVar::Variable { name: ref n2, .. }) =>
@@ -51,7 +52,8 @@ impl AbstVar {
         match self {
             &AbstVar::Variable { ref coefficient, .. } => *coefficient,
             &AbstVar::Constant { ref value, .. } => *value,
-            &AbstVar::SlackVar { .. } | &AbstVar::ArtiVar { .. } => 1.0,
+            &AbstVar::SlackVar { .. } |
+            &AbstVar::ArtiVar { .. } => 1.0,
             &AbstVar::SurplusVar { .. } => -1.0,
         }
     }

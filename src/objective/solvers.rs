@@ -60,12 +60,10 @@ pub fn rearrange_fun_eq_zero(function: &mut Function) {
     exp.move_from_lhs_side(0, false);
     exp.swap_sides().unwrap();
     // Move the constant on the other side if present.
-    let search = exp.lhs().iter().rposition(|var| {
-        match var {
-            &AbstVar::Constant { .. } => true,
-            _ => false,
-        }
-    });
+    let search = exp.lhs().iter().rposition(|var| match var {
+                                                &AbstVar::Constant { .. } => true,
+                                                _ => false,
+                                            });
     if let Some(found_index) = search {
         exp.move_from_lhs_side(found_index, false);
     }

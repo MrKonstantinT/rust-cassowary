@@ -33,12 +33,10 @@ pub fn apply_transition_rule(a_v_i_s: Vec<(String, Num)>,
     for basic_arti_var in a_v_i_s.iter() {
         let regular_constraints = s_c.system()
             .iter()
-            .filter(|constraint| {
-                match constraint {
-                    &&Constraint::Regular(_) => true,
-                    _ => false,
-                }
-            })
+            .filter(|constraint| match constraint {
+                        &&Constraint::Regular(_) => true,
+                        _ => false,
+                    })
             .collect::<Vec<&Constraint>>();
         for constraint in regular_constraints {
             match constraint {
