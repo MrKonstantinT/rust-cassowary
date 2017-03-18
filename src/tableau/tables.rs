@@ -70,6 +70,23 @@ impl Table {
         Ok(basic_solution)
     }
 
+    pub fn get_row_of_basic_var(&self, b_var_name: &String) -> usize {
+        let column = *self.column_names.get(b_var_name).expect("Basic variable name supplied does not exist.");
+        let mut basic_var_row = 0;
+        let mut matched_one = false;
+        for i in 0..self.rows.len() {
+            match (matched_one, self.rows[i][column]) {
+                (false, 0.0) | (true, 0.0) => continue,
+                (false, 1.0) => {
+                    matched_one = true;
+                    basic_var_row = i;
+                }
+                _ => panic!("Basic variable name supplied is not basic."),
+            }
+        }
+        basic_var_row
+    }
+
     pub fn is_solution_optimal(&self) -> bool {
         for i in 0..self.column_names.len() - 1 {
             if self.rows[self.rows.len() - 1][i].is_sign_negative() {
@@ -77,6 +94,14 @@ impl Table {
             }
         }
         true
+    }
+
+    pub fn append_row(&mut self, row: Vec<Num>) {
+        self.rows.push(row);
+    }
+
+    pub fn remove_last_row(&mut self) {
+        self.rows.pop().expect("Failed to remove last row from table.");
     }
 
     pub fn sub_cell(&mut self, row_index: usize, colunm_index: usize, by: Num) {

@@ -7,26 +7,53 @@ use objective::functions::Function;
 use objective::constraints::SystemOfConstraints;
 use objective::solvers::{transform_constraint_rels_to_eq, rearrange_fun_eq_zero};
 use tableau::tables::Table;
-use tableau::initials::get_initial_table_from;
+use tableau::initials::{get_initial_table_from, append_function};
 use tableau::enter_vars::{enter_var_pivot_optimal, enter_var_pivot_feasible};
 use tableau::leave_vars::leave_var;
-use tableau::pivots::pivot_around;
+use tableau::pivots::{pivot_around, apply_transition_rule};
 
 pub type Num = f32;
 
 pub fn optimise(function: &mut Function, constraints: &SystemOfConstraints) -> Vec<(String, Num)> {
     rearrange_fun_eq_zero(function);
     match transform_constraint_rels_to_eq(constraints) {
-        Ok(_) => {
+        Ok(..) => {
             // Carry on with Phase II.
             let mut table = get_initial_table_from(function, constraints);
-            run_simplex(function, &mut table)
+            return run_simplex(function, &mut table);
         }
         Err(mut phase1_fun) => {
             rearrange_fun_eq_zero(&mut phase1_fun);
-            let mut phase1_table = get_initial_table_from(&phase1_fun, constraints);
-            run_simplex(&phase1_fun, &mut phase1_table)
-            // Transition
+            let mut phase1_table = get_initial_table_from(function, constraints);
+            // Set Phase I function to work with.
+            append_function(&phase1_fun, &mut phase1_table);
+            let phase1_solution = run_simplex(&phase1_fun, &mut phase1_table);
+            if phase1_solution.contains(&("W".to_string(), 0.0)) {
+                // Check to see if there are any artificial variables in the Phase I solution.
+                let arti_vars_in_solution = phase1_solution.into_iter()
+                    .filter(|basic_var| {
+                        let (part1, part2) = basic_var.0.split_at(4);
+                        if part1 != "arti" {
+                            return false;
+                        } else {
+                            match part2.parse::<usize>() {
+                                Ok(_) => true,
+                                Err(_) => false,
+                            }
+                        }
+                    })
+                    .collect::<Vec<(String, Num)>>();
+                if arti_vars_in_solution.is_empty() {
+                    // Carry out Phase II - no need for Transition Rule.
+                    return run_phase_2_from_1(function, &mut phase1_table);
+                } else {
+                    // Remove artificial variables from the basis by applying the Transition Rule.
+                    apply_transition_rule(arti_vars_in_solution, constraints, &mut phase1_table);
+                    return run_phase_2_from_1(function, &mut phase1_table);
+                }
+            } else {
+                panic!("Could not find a feasible solution to start Phase II.");
+            }
         }
     }
 }
@@ -60,4 +87,10 @@ fn run_simplex(function: &Function, table: &mut Table) -> Vec<(String, Num)> {
             }
         }
     }
+}
+
+fn run_phase_2_from_1(fun: &Function, table: &mut Table) -> Vec<(String, Num)> {
+    // Set original function to work with.
+    table.remove_last_row();
+    run_simplex(fun, table)
 }
