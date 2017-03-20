@@ -49,7 +49,7 @@ pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints)
         };
     }
     if let Some(phase1_fun_exp) = phase1 {
-        Err(Function::new(phase1_fun_exp, ProblemType::MIN))
+        Err(Function::new(phase1_fun_exp, ProblemType::MAX))
     } else {
         Ok("Did not find any EQ constraints to raise need for phase 1.")
     }
