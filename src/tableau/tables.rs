@@ -102,6 +102,15 @@ impl Table {
         true
     }
 
+    pub fn append_empty_column(&mut self, c_name: String) {
+        let map_len = self.column_names.len();
+        self.column_names.insert(c_name, map_len);
+        let rhs_column_index = self.rows.len() - 2;
+        for row in 0..self.rows.len() {
+            self.rows[row].insert(rhs_column_index, 0.0);
+        }
+    }
+
     pub fn append_row(&mut self, row: Vec<Num>) {
         self.rows.push(row);
     }

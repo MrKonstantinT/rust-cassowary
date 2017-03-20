@@ -17,20 +17,19 @@ pub fn get_initial_table_from(fun: &Function, constraints: &SystemOfConstraints)
                 num_rows += 1;
                 let exp = ref_cell.borrow();
                 for var in exp.lhs() {
-                    let map_len = column_names.len();
-                    column_names.entry(var.name().to_string()).or_insert(map_len);
+                    insert_column_name_not_present(var.name().to_string(), &mut column_names);
                 }
             }
             &Constraint::NonNegative(_) => continue,
         }
     }
     for var in fun.exp_max().borrow().lhs() {
-        let map_len = column_names.len();
-        column_names.entry(var.name().to_string()).or_insert(map_len);
+        insert_column_name_not_present(var.name().to_string(), &mut column_names);
     }
     // ... and don't forget about the constant on the right.
     let map_len = column_names.len();
     column_names.insert("RHS".to_string(), map_len);
+
     let mut rows: Vec<Vec<Num>> = vec![vec![0.0; column_names.len()]; num_rows];
     // Populate the table
     let mut row_index = 0;
@@ -53,10 +52,12 @@ pub fn get_initial_table_from(fun: &Function, constraints: &SystemOfConstraints)
         }
     }
     rows.push(get_row_for_function(fun, &column_names));
+
     Table::new(column_names, rows)
 }
 
 pub fn append_function(fun: &Function, to_table: &mut Table) {
+    to_table.append_empty_column(fun.name().to_string());
     let row_to_append = get_row_for_function(fun, to_table.get_column_names());
     to_table.append_row(row_to_append);
 }
@@ -72,4 +73,9 @@ fn get_row_for_function(fun: &Function, c_n: &HashMap<String, usize>) -> Vec<Num
     // Set the value of {Fun name} in the table.
     fun_row[c_n.len() - 1] = fun_vars.rhs()[0].get_data();
     fun_row
+}
+
+fn insert_column_name_not_present(name: String, into: &mut HashMap<String, usize>) {
+    let map_len = into.len();
+    into.entry(name).or_insert(map_len);
 }
