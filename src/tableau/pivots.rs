@@ -30,7 +30,7 @@ pub fn pivot_around(enter_var_index: usize, leave_var_index: usize, table: &mut 
 pub fn apply_transition_rule(a_v_i_s: Vec<(String, Num)>,
                              s_c: &SystemOfConstraints,
                              table: &mut Table) {
-    for basic_arti_var in a_v_i_s.iter() {
+    'next_arti_var: for basic_arti_var in a_v_i_s.iter() {
         let regular_constraints = s_c.system()
             .iter()
             .filter(|constraint| match constraint {
@@ -38,6 +38,7 @@ pub fn apply_transition_rule(a_v_i_s: Vec<(String, Num)>,
                         _ => false,
                     })
             .collect::<Vec<&Constraint>>();
+        let arti_var_row = table.get_row_of_basic_var(&basic_arti_var.0);
         for constraint in regular_constraints {
             match constraint {
                 &Constraint::Regular(ref ref_cell) => {
@@ -47,15 +48,12 @@ pub fn apply_transition_rule(a_v_i_s: Vec<(String, Num)>,
                         match var {
                             &AbstVar::ArtiVar { .. } => continue,
                             non_arti_var => {
-                                if non_arti_var.get_data() != 0.0 {
-                                    let row_index = table.get_row_of_basic_var(&basic_arti_var.0);
-                                    let column_index = *table.get_column_names()
-                                        .get(non_arti_var.name())
-                                        .expect("Failed to row number for non-artificial varible.");
-                                    pivot_around(column_index, row_index, table);
-                                    break;
-                                } else {
-                                    continue;
+                                let non_arti_var_column = *table.get_column_names()
+                                    .get(non_arti_var.name())
+                                    .expect("Failed to get row number for non-artificial varible.");
+                                if table.get_rows()[arti_var_row][non_arti_var_column] != 0.0 {
+                                    pivot_around(non_arti_var_column, arti_var_row, table);
+                                    continue 'next_arti_var;
                                 }
                             }
                         }
