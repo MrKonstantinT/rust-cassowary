@@ -65,10 +65,11 @@ fn run_simplex(function: &Function, table: &mut Table) -> Vec<(String, Num)> {
                 if table.is_solution_optimal() {
                     if function.p_type() == &ProblemType::MIN {
                         // Give solution for MIN as currently it is given as MAX.
-                        let (pos, _) = basic_solution.iter()
-                            .enumerate()
-                            .find(|&entry| (entry.1).0 == "Q")
-                            .unwrap();
+                        let (pos, _) =
+                            basic_solution.iter()
+                                .enumerate()
+                                .find(|&entry| (entry.1).0 == "Q")
+                                .expect("Failed to locate value of \"Q\" in optimal solution.");
                         basic_solution[pos] = (function.name().clone(),
                                                basic_solution[pos].1 * -1.0);
                         return basic_solution;
@@ -81,8 +82,12 @@ fn run_simplex(function: &Function, table: &mut Table) -> Vec<(String, Num)> {
                 }
             }
             Err(index_report) => {
-                let enter_var_index =
-                    enter_var_pivot_feasible(&table, index_report.0, index_report.1).unwrap();
+                let enter_var_index = enter_var_pivot_feasible(&table,
+                                                               index_report.0,
+                                                               index_report.1)
+                                                               .expect("Could find a leftmost
+                                                               positive value cell for pivoting
+                                                               to enter feasible region.");
                 pivot_around(enter_var_index, leave_var(enter_var_index, &table), table);
             }
         }

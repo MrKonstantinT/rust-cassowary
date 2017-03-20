@@ -40,7 +40,8 @@ impl Table {
                     _ => {
                         // ... if this is not the case then the value of this
                         // variables in the basic solution is 0.0.
-                        basic_solution.push((get_name_of_index(&self.column_names, i).unwrap(),
+                        basic_solution.push((get_name_of_index(&self.column_names, i)
+                                             .expect("Name not found for index given."),
                                              0.0));
                         continue 'columns;
                     }
@@ -59,11 +60,15 @@ impl Table {
                     return Err((one_entry_index, i));
                 } else {
                     // ... if not continue generating the solution.
-                    basic_solution.push((get_name_of_index(&self.column_names, i).unwrap(),
+                    basic_solution.push((get_name_of_index(&self.column_names, i)
+                                         .expect("get_basic_solution: Name not found for index
+                                         given."),
                                          basic_variable_value));
                 }
             } else {
-                basic_solution.push((get_name_of_index(&self.column_names, i).unwrap(), 0.0));
+                basic_solution.push((get_name_of_index(&self.column_names, i)
+                                     .expect("get_basic_solution: Name not found for index
+                                     given."), 0.0));
             }
         }
         // If we got here then solution is feasable so return it.
@@ -82,7 +87,7 @@ impl Table {
                     matched_one = true;
                     basic_var_row = i;
                 }
-                _ => panic!("Basic variable name supplied is not basic."),
+                _ => panic!("Named variable is not basic."),
             }
         }
         basic_var_row
@@ -114,11 +119,11 @@ impl Table {
     }
 }
 
-fn get_name_of_index(c_n: &HashMap<String, usize>, index: usize) -> Result<String, &str> {
+fn get_name_of_index(c_n: &HashMap<String, usize>, index: usize) -> Option<String> {
     for (key, val) in c_n.iter() {
         if *val == index {
-            return Ok(key.clone());
+            return Some(key.clone());
         }
     }
-    Err("Name not found for index given.")
+    None
 }

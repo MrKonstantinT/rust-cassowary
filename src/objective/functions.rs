@@ -61,8 +61,8 @@ impl Debug for Function {
             rhs_s.push_str(" +");
             rhs_s
         });
-        string_exp.pop().unwrap();
-        string_exp.pop().unwrap();
+        string_exp.pop().expect("Failed to pop \"+\" character.");
+        string_exp.pop().expect("Failed to pop \" \" character.");
         write!(f, "{} ={}", exp.lhs()[0].name(), string_exp)
     }
 }

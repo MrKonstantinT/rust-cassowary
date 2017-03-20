@@ -39,7 +39,10 @@ pub fn get_initial_table_from(fun: &Function, constraints: &SystemOfConstraints)
             &Constraint::Regular(ref ref_cell) => {
                 let exp = ref_cell.borrow();
                 for var in exp.lhs() {
-                    rows[row_index][*column_names.get(var.name()).unwrap()] = var.get_data();
+                    rows[row_index]
+                        [*column_names.get(var.name())
+                         .expect("get_initial_table_from: variable name key not present.")] =
+                        var.get_data();
                 }
                 // ... and don't forget about the constant on the right.
                 let last_column = rows[row_index].len() - 1;
@@ -62,7 +65,9 @@ fn get_row_for_function(fun: &Function, c_n: &HashMap<String, usize>) -> Vec<Num
     let fun_vars = fun.exp_max().borrow();
     let mut fun_row = vec![0.0; c_n.len()];
     for var in fun_vars.lhs() {
-        fun_row[*c_n.get(var.name()).unwrap()] = var.get_data();
+        fun_row[*c_n.get(var.name())
+                .expect("get_row_for_function: variable name key not present.")] =
+            var.get_data();
     }
     // Set the value of {Fun name} in the table.
     fun_row[c_n.len() - 1] = fun_vars.rhs()[0].get_data();

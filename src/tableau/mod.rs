@@ -265,7 +265,7 @@ mod tests {
                                vec![-1.0, 0.0, -4.0, 0.0, 1.0, 60.0],
                                vec![-14.0, -6.0, -13.0, 0.0, 0.0, 0.0]];
         let table2 = Table::new(column_names2, table2_rows);
-        assert_eq!(true, enter_var_pivot_feasible(&table2, 1, 4).is_err());
+        assert_eq!(true, enter_var_pivot_feasible(&table2, 1, 4).is_none());
     }
 
     #[test]
