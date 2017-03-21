@@ -1,10 +1,13 @@
 use std::collections::HashMap;
 use std::result::Result;
+use std::fmt::{Formatter, Debug};
+use std::fmt;
 use Num;
 
 pub struct Table {
     column_names: HashMap<String, usize>, // assume last column reserved
     rows: Vec<Vec<Num>>,
+    num_fun_rows: usize,
 }
 
 impl Table {
@@ -12,6 +15,7 @@ impl Table {
         Table {
             rows: r,
             column_names: c_n,
+            num_fun_rows: 1,
         }
     }
 
@@ -21,6 +25,10 @@ impl Table {
 
     pub fn get_rows(&self) -> &Vec<Vec<Num>> {
         &self.rows
+    }
+
+    pub fn get_num_fun_rows(&self) -> usize {
+        self.num_fun_rows
     }
 
     pub fn get_basic_solution(&self) -> Result<Vec<(String, Num)>, (usize, usize)> {
@@ -53,21 +61,21 @@ impl Table {
                 let basic_variable_value = self.rows[one_entry_index][i] *
                                            self.rows[one_entry_index][self.column_names.len() - 1];
                 // If the basic variable turns out negative that this solution
-                // is not feasable...
+                // is not feasable... (This applies to GEQ constraints not function rows.)
                 if basic_variable_value.is_sign_negative() &&
-                   one_entry_index != self.rows.len() - 1 {
+                   one_entry_index < self.rows.len() - self.num_fun_rows {
                     // ... report the row where it happened.
                     return Err((one_entry_index, i));
                 } else {
                     // ... if not continue generating the solution.
                     basic_solution.push((get_name_of_index(&self.column_names, i)
-                                         .expect("get_basic_solution: Name not found for index
+                                         .expect("get_basic_solution: Name not found for index \
                                          given."),
                                          basic_variable_value));
                 }
             } else {
                 basic_solution.push((get_name_of_index(&self.column_names, i)
-                                     .expect("get_basic_solution: Name not found for index
+                                     .expect("get_basic_solution: Name not found for index \
                                      given."), 0.0));
             }
         }
@@ -103,9 +111,12 @@ impl Table {
     }
 
     pub fn append_empty_column(&mut self, c_name: String) {
+        // Take away 1 because the RHS is at the end.
         let map_len = self.column_names.len();
-        self.column_names.insert(c_name, map_len);
-        let rhs_column_index = self.rows.len() - 2;
+        self.column_names.insert(c_name, map_len - 1);
+        // Make the RHS point to last cell again.
+        self.column_names.insert("RHS".to_string(), map_len);
+        let rhs_column_index = self.rows[0].len() - 1;
         for row in 0..self.rows.len() {
             self.rows[row].insert(rhs_column_index, 0.0);
         }
@@ -119,12 +130,29 @@ impl Table {
         self.rows.pop().expect("Failed to remove last row from table.");
     }
 
+    pub fn set_num_fun_rows(&mut self, num_rows: usize) {
+        self.num_fun_rows = num_rows;
+    }
+
     pub fn sub_cell(&mut self, row_index: usize, colunm_index: usize, by: Num) {
         self.rows[row_index][colunm_index] = self.rows[row_index][colunm_index] - by;
     }
 
     pub fn div_cell(&mut self, row_index: usize, colunm_index: usize, by: Num) {
         self.rows[row_index][colunm_index] = self.rows[row_index][colunm_index] / by;
+    }
+}
+
+impl Debug for Table {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        let mut matrix = String::new();
+        for row in self.rows.iter() {
+            for cell_value in row {
+                matrix.push_str(format!(" {}", cell_value).as_str());
+            }
+            matrix.push_str("\n");
+        }
+        write!(f, "{}", matrix)
     }
 }
 

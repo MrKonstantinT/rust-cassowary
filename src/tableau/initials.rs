@@ -60,6 +60,8 @@ pub fn append_function(fun: &Function, to_table: &mut Table) {
     to_table.append_empty_column(fun.name().to_string());
     let row_to_append = get_row_for_function(fun, to_table.get_column_names());
     to_table.append_row(row_to_append);
+    let old_num_fun_rows = to_table.get_num_fun_rows();
+    to_table.set_num_fun_rows(old_num_fun_rows + 1);
 }
 
 fn get_row_for_function(fun: &Function, c_n: &HashMap<String, usize>) -> Vec<Num> {

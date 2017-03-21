@@ -29,7 +29,7 @@ pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints)
                     &Relationship::EQ => {
                         // Build function for phase 1.
                         if let Some(ref mut phase1_fun_exp) = phase1 {
-                            phase1_fun_exp.add_rhs(new_const("RHS", exp.rhs()[0].get_data()));
+                            phase1_fun_exp.add_rhs(new_const("RHS", -1.0 * exp.rhs()[0].get_data()));
                             for var in exp.lhs() {
                                 phase1_fun_exp.add_rhs(var.clone());
                             }
@@ -37,7 +37,7 @@ pub fn transform_constraint_rels_to_eq(constraints: &SystemOfConstraints)
                             let mut phase1_fun_exp = Expression::new(vec![new_var("W", 1.0)],
                                                                      Relationship::EQ,
                                                                      exp.lhs().clone());
-                            phase1_fun_exp.add_rhs(new_const("RHS", exp.rhs()[0].get_data()));
+                            phase1_fun_exp.add_rhs(new_const("RHS", -1.0 * exp.rhs()[0].get_data()));
                             phase1 = Some(phase1_fun_exp);
                         }
                         // Transform.
