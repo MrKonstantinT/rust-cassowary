@@ -2,6 +2,7 @@ pub mod math;
 pub mod objective;
 pub mod tableau;
 
+use math::variables::is_gen_arti_var;
 use objective::problems::ProblemType;
 use objective::functions::Function;
 use objective::constraints::SystemOfConstraints;
@@ -25,24 +26,12 @@ pub fn optimise(function: &mut Function, constraints: &SystemOfConstraints) -> V
         if phase1_solution.contains(&("W".to_string(), 0.0)) {
             // Check to see if there are any artificial variables in the Phase I solution.
             let arti_vars_in_solution = phase1_solution.into_iter()
-                .filter(|basic_var| {
-                    if basic_var.0.len() < 4 {
-                        return false;
-                    }
-                    let (part1, part2) = basic_var.0.split_at(4);
-                    if part1 != "arti" {
-                        return false;
-                    } else {
-                        match part2.parse::<usize>() {
-                            Ok(_) => true,
-                            Err(_) => false,
-                        }
-                    }
-                })
+                .filter(|basic_var| is_gen_arti_var(&basic_var.0))
                 .collect::<Vec<(String, Num)>>();
             if arti_vars_in_solution.is_empty() {
                 // Carry out Phase II - no need for Transition Rule.
-                return run_phase_2_from_1(function, &mut phase1_table);
+                let solution = run_phase_2_from_1(function, &mut phase1_table);
+                return solution;
             } else {
                 // Remove artificial variables from the basis by applying the Transition Rule.
                 apply_transition_rule(arti_vars_in_solution, constraints, &mut phase1_table);

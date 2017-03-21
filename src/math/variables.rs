@@ -100,3 +100,18 @@ pub fn new_surplus_var(n: String) -> AbstVar {
 pub fn new_arti_var(n: String) -> AbstVar {
     AbstVar::ArtiVar { name: n }
 }
+
+pub fn is_gen_arti_var(name: &String) -> bool {
+    if name.len() < 4 {
+        return false;
+    }
+    let (part1, part2) = name.split_at(4);
+    if part1 != "arti" {
+        return false;
+    } else {
+        match part2.parse::<usize>() {
+            Ok(_) => true,
+            Err(_) => false,
+        }
+    }
+}

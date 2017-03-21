@@ -91,8 +91,10 @@ fn simplex_test_max_4() {
     let exp1 = Expression::new(vec![new_var("Z", 1.0)],
                                Relationship::EQ,
                                vec![new_var("x1", -3.0), new_var("x3", 1.0)]);
-    let exp2 = Expression::new(vec![new_var("x1", 1.0), new_var("x2", 1.0),
-                                    new_var("x3", 1.0), new_var("x4", 1.0)],
+    let exp2 = Expression::new(vec![new_var("x1", 1.0),
+                                    new_var("x2", 1.0),
+                                    new_var("x3", 1.0),
+                                    new_var("x4", 1.0)],
                                Relationship::EQ,
                                vec![new_const("con1", 4.0)]);
     let exp3 = Expression::new(vec![new_var("x1", -2.0), new_var("x2", 1.0), new_var("x3", -1.0)],
@@ -112,8 +114,8 @@ fn simplex_test_max_4() {
     let subject_to = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5, c6, c7]);
     let solution = cassowary::optimise(&mut objective_func, &subject_to);
     assert_eq!(4, solution.len());
-    assert!(solution.contains(&("Z".to_string(), 4.0)));
-    assert!(solution.contains(&("x3".to_string(), 4.0)));
-    assert!(solution.contains(&("arti2".to_string(), 5.0)));
-    assert!(solution.contains(&("arti3".to_string(), 5.0)));
+    assert!(solution.contains(&("Z".to_string(), 1.5)));
+    assert!(solution.contains(&("x2".to_string(), 2.5)));
+    assert!(solution.contains(&("x3".to_string(), 1.5)));
+    assert!(solution.contains(&("x4".to_string(), 0.0)));
 }

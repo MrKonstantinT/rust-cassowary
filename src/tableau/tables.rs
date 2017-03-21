@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::result::Result;
+use math::variables::is_gen_arti_var;
 use Num;
 
 pub struct Table {
@@ -89,7 +90,27 @@ impl Table {
     }
 
     pub fn is_solution_optimal(&self) -> bool {
-        for i in 0..self.column_names.len() - 1 {
+        // Make sure we do not consider pivoting in on artificial variables in Phase II.
+        let valid_cells = match self.num_fun_rows {
+            2 => (0..self.column_names.len() - 1).collect::<Vec<usize>>(),
+            1 => {
+                let arti_var_indexes = self.column_names
+                    .iter()
+                    .filter(|&(key, _)| is_gen_arti_var(key))
+                    .map(|(_, index)| index.clone())
+                    .collect::<Vec<usize>>();
+                if arti_var_indexes.is_empty() {
+                    (0..self.column_names.len() - 1).collect::<Vec<usize>>()
+                } else {
+                    (0..self.column_names.len() - 1)
+                        .filter(|index| !arti_var_indexes.contains(index))
+                        .collect::<Vec<usize>>()
+                }
+            }
+            _ => panic!("is_solution_optimal: expected 1 or 2 functions in table."),
+        };
+
+        for i in valid_cells {
             if self.rows[self.rows.len() - 1][i].is_sign_negative() {
                 return false;
             }
