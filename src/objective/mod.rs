@@ -161,7 +161,7 @@ mod tests {
         let c5 = new_non_neg_con(new_var("x", 2.0));
         let s = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
         assert_eq!("W = 101k + 45c + -500RHS",
-                   format!("{:?}", transform_constraint_rels_to_eq(&s).unwrap_err()));
+                   format!("{:?}", transform_constraint_rels_to_eq(&s).unwrap()));
         match s.system()[0] {
             Constraint::Regular(ref ref_cell) => {
                 let exp = ref_cell.borrow();

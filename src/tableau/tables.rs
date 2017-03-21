@@ -1,7 +1,5 @@
 use std::collections::HashMap;
 use std::result::Result;
-use std::fmt::{Formatter, Debug};
-use std::fmt;
 use Num;
 
 pub struct Table {
@@ -55,8 +53,7 @@ impl Table {
                                            self.rows[one_entry_index][self.column_names.len() - 1];
                 // If the basic variable turns out negative that this solution
                 // is not feasable... (This applies to GEQ constraints not function rows.)
-                if basic_variable_value != 0.0 &&
-                   basic_variable_value.is_sign_negative() &&
+                if basic_variable_value != 0.0 && basic_variable_value.is_sign_negative() &&
                    one_entry_index < self.rows.len() - self.num_fun_rows {
                     // ... report the row where it happened.
                     return Err((one_entry_index, i));
@@ -130,19 +127,6 @@ impl Table {
 
     pub fn div_cell(&mut self, row_index: usize, colunm_index: usize, by: Num) {
         self.rows[row_index][colunm_index] = self.rows[row_index][colunm_index] / by;
-    }
-}
-
-impl Debug for Table {
-    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        let mut matrix = String::new();
-        for row in self.rows.iter() {
-            for cell_value in row {
-                matrix.push_str(format!(" {}", cell_value).as_str());
-            }
-            matrix.push_str("\n");
-        }
-        write!(f, "{}", matrix)
     }
 }
 

@@ -193,7 +193,7 @@ mod tests {
         let c4 = Constraint::NonNegative(new_var("x2", 1.0));
         let c5 = Constraint::NonNegative(new_var("x3", 1.0));
         let system = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
-        transform_constraint_rels_to_eq(&system).unwrap();
+        transform_constraint_rels_to_eq(&system);
         let table = get_initial_table_from(&f, &system);
         let table_header = table.get_column_names();
         let table_rows = table.get_rows();
