@@ -55,7 +55,8 @@ impl Table {
                                            self.rows[one_entry_index][self.column_names.len() - 1];
                 // If the basic variable turns out negative that this solution
                 // is not feasable... (This applies to GEQ constraints not function rows.)
-                if basic_variable_value.is_sign_negative() &&
+                if basic_variable_value != 0.0 &&
+                   basic_variable_value.is_sign_negative() &&
                    one_entry_index < self.rows.len() - self.num_fun_rows {
                     // ... report the row where it happened.
                     return Err((one_entry_index, i));
