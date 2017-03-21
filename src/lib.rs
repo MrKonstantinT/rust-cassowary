@@ -32,6 +32,9 @@ pub fn optimise(function: &mut Function, constraints: &SystemOfConstraints) -> V
                 // Check to see if there are any artificial variables in the Phase I solution.
                 let arti_vars_in_solution = phase1_solution.into_iter()
                     .filter(|basic_var| {
+                        if basic_var.0.len() < 4 {
+                            return false;
+                        }
                         let (part1, part2) = basic_var.0.split_at(4);
                         if part1 != "arti" {
                             return false;
@@ -85,8 +88,8 @@ fn run_simplex(function: &Function, table: &mut Table) -> Vec<(String, Num)> {
                 let enter_var_index = enter_var_pivot_feasible(&table,
                                                                index_report.0,
                                                                index_report.1)
-                                                               .expect("Could find a leftmost
-                                                               positive value cell for pivoting
+                                                               .expect("Could not find a leftmost \
+                                                               positive value cell for pivoting \
                                                                to enter feasible region.");
                 pivot_around(enter_var_index, leave_var(enter_var_index, &table), table);
             }
@@ -97,5 +100,7 @@ fn run_simplex(function: &Function, table: &mut Table) -> Vec<(String, Num)> {
 fn run_phase_2_from_1(fun: &Function, table: &mut Table) -> Vec<(String, Num)> {
     // Set original function to work with.
     table.remove_last_row();
+    let old_num_fun_rows = table.get_num_fun_rows();
+    table.set_num_fun_rows(old_num_fun_rows - 1);
     run_simplex(fun, table)
 }
