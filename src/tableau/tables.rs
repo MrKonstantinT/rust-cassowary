@@ -45,14 +45,7 @@ impl Table {
                         matched_one = true;
                     }
                     (true, 0.0) | (false, 0.0) => continue 'column_entries,
-                    _ => {
-                        // ... if this is not the case then the value of this
-                        // variables in the basic solution is 0.0.
-                        basic_solution.push((get_name_of_index(&self.column_names, i)
-                                             .expect("Name not found for index given."),
-                                             0.0));
-                        continue 'columns;
-                    }
+                    _ => continue 'columns,
                 }
             }
             // ... and when we find a basic variable calculate its value but
@@ -73,10 +66,6 @@ impl Table {
                                          given."),
                                          basic_variable_value));
                 }
-            } else {
-                basic_solution.push((get_name_of_index(&self.column_names, i)
-                                     .expect("get_basic_solution: Name not found for index \
-                                     given."), 0.0));
             }
         }
         // If we got here then solution is feasable so return it.
