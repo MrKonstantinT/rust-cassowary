@@ -162,3 +162,68 @@ fn simplex_test_min_4() {
     assert!(solution.contains(&("x1".to_string(), 8.0)));
     assert!(solution.contains(&("su1".to_string(), 8.0)));
 }
+
+#[test]
+fn simplex_test_min_5() {
+    // Create a juice drink composed of: orange soda (x1 in ounces) and orange juice (x2 in ounces).
+    // Minimise the cost of the drink.
+    //
+    // Minimise Z = 2x1 + 3x2 (cost of the drink)
+    let exp1 = Expression::new(vec![new_var("Z", 1.0)],
+                               Relationship::EQ,
+                               vec![new_var("x1", 2.0), new_var("x2", 3.0)]);
+    // 0.5x1 + 0.25x2 <= 4 (sugar)
+    let exp2 = Expression::new(vec![new_var("x1", 0.5), new_var("x2", 0.25)],
+                               Relationship::LEQ,
+                               vec![new_const("con1", 4.0)]);
+    // x1 + 3x2 >= 20 (vitamin C)
+    let exp3 = Expression::new(vec![new_var("x1", 1.0), new_var("x2", 3.0)],
+                               Relationship::GEQ,
+                               vec![new_const("con2", 20.0)]);
+    // x1 + x2 = 10 (10 oz in bottle of drink (i.e. fill bottle))
+    let exp4 = Expression::new(vec![new_var("x1", 1.0), new_var("x2", 1.0)],
+                               Relationship::EQ,
+                               vec![new_const("con3", 10.0)]);
+    let mut objective_func = Function::new(exp1, ProblemType::MIN);
+    let c1 = new_reg_con(exp2);
+    let c2 = new_reg_con(exp3);
+    let c3 = new_reg_con(exp4);
+    let c4 = new_non_neg_con(new_var("x1", 1.0));
+    let c5 = new_non_neg_con(new_var("x2", 1.0));
+    let subject_to = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
+    let solution = cassowary::optimise(&mut objective_func, &subject_to);
+    assert_eq!(4, solution.len());
+    assert!(solution.contains(&("Z".to_string(), 25.0)));
+    assert!(solution.contains(&("x1".to_string(), 5.0)));
+    assert!(solution.contains(&("x2".to_string(), 5.0)));
+    assert!(solution.contains(&("sl1".to_string(), 0.25)));
+}
+
+#[test]
+fn simplex_test_min_6() {
+    let exp1 = Expression::new(vec![new_var("Z", 1.0)],
+                               Relationship::EQ,
+                               vec![new_var("x1", 3.0), new_var("x2", 1.0)]);
+    let exp2 = Expression::new(vec![new_var("x1", 4.0), new_var("x2", 1.0)],
+                               Relationship::EQ,
+                               vec![new_const("con1", 4.0)]);
+    let exp3 = Expression::new(vec![new_var("x1", 5.0), new_var("x2", 3.0)],
+                               Relationship::GEQ,
+                               vec![new_const("con2", 7.0)]);
+    let exp4 = Expression::new(vec![new_var("x1", 3.0), new_var("x2", 2.0)],
+                               Relationship::LEQ,
+                               vec![new_const("con3", 6.0)]);
+    let mut objective_func = Function::new(exp1, ProblemType::MIN);
+    let c1 = new_reg_con(exp2);
+    let c2 = new_reg_con(exp3);
+    let c3 = new_reg_con(exp4);
+    let c4 = new_non_neg_con(new_var("x1", 1.0));
+    let c5 = new_non_neg_con(new_var("x2", 1.0));
+    let subject_to = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
+    let solution = cassowary::optimise(&mut objective_func, &subject_to);
+    assert_eq!(4, solution.len());
+    assert!(solution.contains(&("Z".to_string(), 23.0 / 7.0)));
+    assert!(solution.contains(&("x1".to_string(), 5.0 / 7.0)));
+    assert!(solution.contains(&("x2".to_string(), 8.0 / 7.0)));
+    assert!(solution.contains(&("sl3".to_string(), 22.0 / 14.0)));
+}
