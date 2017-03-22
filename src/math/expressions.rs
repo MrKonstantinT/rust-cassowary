@@ -1,5 +1,6 @@
 use std::mem;
 use std::result::Result;
+use std::fmt;
 use Num;
 use math::variables::{AbstVar, new_const};
 use math::relationships::Relationship;
@@ -73,6 +74,16 @@ impl Expression {
         } else {
             Err("Invalid state: relationship must be \"EQ\".")
         }
+    }
+}
+
+impl fmt::Debug for Expression {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("Expression")
+            .field("lhs", &self.left_hand_side)
+            .field("rel", &self.relationship)
+            .field("rhs", &self.right_hand_side)
+            .finish()
     }
 }
 

@@ -1,5 +1,4 @@
 use std::cell::RefCell;
-use std::fmt::{Formatter, Debug, Result};
 use math::variables::new_var;
 use math::relationships::Relationship;
 use math::expressions::Expression;
@@ -48,36 +47,6 @@ impl Function {
         } else {
             &self.expression
         }
-    }
-}
-
-impl Debug for Function {
-    fn fmt(&self, f: &mut Formatter) -> Result {
-        let exp = self.expression.borrow();
-        let mut lhs_exp_string  = exp.lhs().iter().fold(String::new(), |mut lhs_s, ref var| {
-            lhs_s.push_str(" ");
-            if var.get_data() != 1.0 {
-                lhs_s.push_str(var.get_data().to_string().as_str());
-            }
-            lhs_s.push_str(var.name());
-            lhs_s.push_str(" +");
-            lhs_s
-        });
-        lhs_exp_string.remove(0);
-        lhs_exp_string.pop().expect("Failed to pop \"+\" character.");
-        lhs_exp_string.pop().expect("Failed to pop \" \" character.");
-        let mut rhs_exp_string = exp.rhs().iter().fold(String::new(), |mut rhs_s, ref var| {
-            rhs_s.push_str(" ");
-            if var.get_data() != 1.0 {
-                rhs_s.push_str(var.get_data().to_string().as_str());
-            }
-            rhs_s.push_str(var.name());
-            rhs_s.push_str(" +");
-            rhs_s
-        });
-        rhs_exp_string.pop().expect("Failed to pop \"+\" character.");
-        rhs_exp_string.pop().expect("Failed to pop \" \" character.");
-        write!(f, "{} ={}", lhs_exp_string, rhs_exp_string)
     }
 }
 

@@ -160,8 +160,14 @@ mod tests {
         let c4 = new_reg_con(exp4);
         let c5 = new_non_neg_con(new_var("x", 2.0));
         let s = SystemOfConstraints::new(vec![c1, c2, c3, c4, c5]);
-        assert_eq!("W = 101k + 45c + -500RHS",
-                   format!("{:?}", transform_constraint_rels_to_eq(&s).unwrap()));
+        let fun = transform_constraint_rels_to_eq(&s).unwrap();
+        assert_eq!("Expression { \
+                   lhs: [Variable { name: \"W\", coefficient: 1 }], \
+                   rel: EQ, \
+                   rhs: [Variable { name: \"k\", coefficient: 101 }, \
+                         Variable { name: \"c\", coefficient: 45 }, \
+                         Constant { name: \"RHS\", value: -500 }] }",
+                   format!("{:?}", fun.exp_max().borrow()));
         match s.system()[0] {
             Constraint::Regular(ref ref_cell) => {
                 let exp = ref_cell.borrow();
