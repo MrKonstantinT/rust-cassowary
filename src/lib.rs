@@ -30,8 +30,7 @@ pub fn optimise(function: &mut Function, constraints: &SystemOfConstraints) -> V
                 .collect::<Vec<(String, Num)>>();
             if arti_vars_in_solution.is_empty() {
                 // Carry out Phase II - no need for Transition Rule.
-                let solution = run_phase_2_from_1(function, &mut phase1_table);
-                return solution;
+                return run_phase_2_from_1(function, &mut phase1_table);
             } else {
                 // Remove artificial variables from the basis by applying the Transition Rule.
                 apply_transition_rule(arti_vars_in_solution, constraints, &mut phase1_table);
